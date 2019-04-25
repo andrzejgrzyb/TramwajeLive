@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/refresh"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_refresh_24dp"
+          android:title="Refresh"/>
+    <item android:id="@+id/filter"
+          app:showAsAction="always"
+          android:checkable="true"
+          android:icon="@drawable/ic_filter_list_24dp"
+          android:title="Filter"/>
+
+    <group android:checkableBehavior="single"
+           android:id="@+id/filters_group">
+        <item android:id="@+id/filter1"
+              android:title="Filter 1"/>
+        <item android:id="@+id/filter2"
+              android:title="Filter 2"/>
+        <item android:id="@+id/filter3"
+              android:title="Filter 3"/>
+
+    </group>
+</menu>

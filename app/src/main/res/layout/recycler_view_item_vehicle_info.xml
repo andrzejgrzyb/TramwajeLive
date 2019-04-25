@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/line_number"
+            tools:text="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignBottom="@+id/longitude"
+            android:textStyle="bold"/>
+    <TextView
+            android:id="@+id/latitude"
+            tools:text="52.2747955"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="64dp"/>
+    <TextView
+            android:id="@+id/longitude"
+            tools:text="21.0307789"
+            android:layout_below="@id/latitude"
+            android:layout_alignStart="@id/latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/brigade"
+            tools:text="12"
+            android:layout_alignStart="@id/longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="128dp"/>
+    <TextView
+            android:id="@+id/time"
+            tools:text="2019-04-18 12:18:05"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brigade"
+            android:layout_alignStart="@id/brigade"/>
+</RelativeLayout>
