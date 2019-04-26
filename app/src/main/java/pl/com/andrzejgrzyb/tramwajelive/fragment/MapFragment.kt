@@ -18,6 +18,7 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import pl.com.andrzejgrzyb.tramwajelive.MainViewModel
 import java.lang.NumberFormatException
 
 private const val TAG = "MapFragment"
@@ -28,9 +29,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mMapView: MapView
     private lateinit var mMap: GoogleMap
-//    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val mapViewModel by sharedViewModel<VehicleDataViewModel>()
+    private val mainViewModel by sharedViewModel<MainViewModel>()
 
     companion object {
         //        val instance: VehicleListFragment by lazy { VehicleListFragment() }
@@ -80,6 +81,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             Log.i(TAG, "trams changed")
             updateMapMarkers(data)
 
+        })
+        mainViewModel.filteredLineNumbers.observe(this, Observer {
+            Log.i(TAG, "Filters changed: $it")
+            updateMapMarkers(mapViewModel.vehicleData.value!!)
         })
     }
 
@@ -138,8 +143,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun updateMapMarkers(data: List<VehicleInfo>) {
         mMap.clear()
-        data
-            //                .filter { it.lines == 1 }
+
+        data.filter {
+            mainViewModel.filteredLineNumbers.value?.contains(it.lines) ?: true
+        }
             .forEach {
                 mMap.addMarker(
                     MarkerOptions().position(

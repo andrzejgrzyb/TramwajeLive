@@ -14,6 +14,7 @@ class MainApplication: Application() {
             androidContext(this@MainApplication)
             modules(listOf(
                 networkModule,
+                localRepository,
                 viewModelModule
             ))
         }

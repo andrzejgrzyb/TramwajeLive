@@ -10,6 +10,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import pl.com.andrzejgrzyb.tramwajelive.fragment.FilterViewModel
+import pl.com.andrzejgrzyb.tramwajelive.repository.FilterRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -19,11 +21,15 @@ val networkModule = module {
     single { WarsawRepository(get()) }
 }
 
-val viewModelModule = module {
-    viewModel { MainViewModel(get()) }
-    viewModel { VehicleDataViewModel(get()) }
-    viewModel { MapViewModel(get()) }
+val localRepository = module {
+    single { FilterRepository() }
+}
 
+val viewModelModule = module {
+    viewModel { MainViewModel(get(), get()) }
+    viewModel { VehicleDataViewModel(get(), get()) }
+    viewModel { MapViewModel(get()) }
+    viewModel { FilterViewModel(get()) }
 }
 
 fun provideWarsawService(): WarsawService {
@@ -43,7 +49,7 @@ fun provideWarsawService(): WarsawService {
     }
 
     val client = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
+//        .addInterceptor(loggingInterceptor)
         .addInterceptor(apiParamsInterceptor)
         .build()
 

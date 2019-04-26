@@ -2,6 +2,7 @@ package pl.com.andrzejgrzyb.tramwajelive
 
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,11 +12,11 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import pl.com.andrzejgrzyb.tramwajelive.fragment.FilterFragment
-import pl.com.andrzejgrzyb.tramwajelive.fragment.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import pl.com.andrzejgrzyb.tramwajelive.fragment.FilterFragment
+import pl.com.andrzejgrzyb.tramwajelive.fragment.MapFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,11 +69,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar, menu)
+        mainViewModel.filteredLineNumbers.observe(this, Observer {
+            menu?.findItem(R.id.filter)?.icon?.mutate()?.setColorFilter(
+                ContextCompat.getColor(
+                    this,
+                    if (mainViewModel.isFilterOn()) R.color.colorAccent else R.color.bgLineNumberFilter
+                ), PorterDuff.Mode.SRC_ATOP
+            )
+        })
         return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        return super.onPrepareOptionsMenu(menu)
     }
 
     fun filter(v: View) {
@@ -97,10 +102,8 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.refreshData()
             }
             R.id.filter -> {
-                filter(findViewById(R.id.filter))
-                    item.icon.mutate().setColorFilter(ContextCompat.getColor(this,
-                        R.color.colorAccent
-                    ), PorterDuff.Mode.SRC_ATOP)
+                Log.i("MainActivity", "Filter button clicked")
+                mainViewModel.filterButtonClicked()
             }
         }
         return true
