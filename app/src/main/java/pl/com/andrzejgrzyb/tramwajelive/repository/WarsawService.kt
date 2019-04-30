@@ -10,8 +10,4 @@ interface WarsawService {
 
     @GET("api/action/busestrams_get/")
     fun getAllVehicles(@Query("type") type: Int): Deferred<Response<ApiResponse>>
-
-    @GET("api/action/busestrams_get/")
-    fun getAllVehicles2(@Query("type") type: Int): Deferred<Response<ApiResponse>>
-//    fun getAllVehicles(@Query("type") type: Int): Call<ApiResponse>
 }

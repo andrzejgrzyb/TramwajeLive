@@ -10,6 +10,8 @@ import kotlinx.coroutines.*
 import java.lang.Runnable
 import kotlin.coroutines.CoroutineContext
 
+const val API_CALL_INTERVAL = 10000L
+
 class WarsawRepository(private val warsawService: WarsawService) : BaseRepository() {
 
     val TAG = "WarsawRepository"
@@ -30,7 +32,7 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
         set(value) {
             field = value
             if (!tramCallInProgress) {
-                allVehicleResults.postValue(tramResults + busResults)
+                sumVehicleResults()
             }
         }
 
@@ -55,9 +57,7 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
             // Do something here on the main thread
             getTramData()
             getBusData()
-//            refreshData(true)
-//            refreshData(false)
-            handler.postDelayed(this, 5000)
+            handler.postDelayed(this, API_CALL_INTERVAL)
         }
     }
 
@@ -86,20 +86,12 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
     fun getBusData() {
         busCallInProgress = true
         busScope.launch {
-            val apiResponse = safeApiResult(
-                call = { warsawService.getAllVehicles2(1).await() },
-                errorMessage = "Bus API call failure :("
-            )
+            val apiResponse = getAllVehicles(false)
+
             busCallInProgress = false
             when (apiResponse) {
-                is Result.Success -> apiResponse.data.result?.let {
-                    Log.i(TAG, it[0].toString())
-                    busResults = it
-                }
-                is Result.Error -> {
-                    Log.i(TAG, apiResponse.exception.message)
-                    errorMessage.postValue(apiResponse.exception.message)
-                }
+                is Result.Success -> apiResponse.data.result?.let { busResults = it }
+                is Result.Error -> errorMessage.postValue(apiResponse.exception.message)
             }
         }
     }
