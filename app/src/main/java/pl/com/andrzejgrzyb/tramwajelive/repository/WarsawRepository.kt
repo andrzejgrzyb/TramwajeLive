@@ -3,20 +3,27 @@ package pl.com.andrzejgrzyb.tramwajelive.repository
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import pl.com.andrzejgrzyb.tramwajelive.model.ApiResponse
 import pl.com.andrzejgrzyb.tramwajelive.model.Result
+import pl.com.andrzejgrzyb.tramwajelive.model.Vehicle
 import pl.com.andrzejgrzyb.tramwajelive.model.VehicleInfo
-import kotlinx.coroutines.*
-import java.lang.Runnable
+import java.text.SimpleDateFormat
 import kotlin.coroutines.CoroutineContext
 
 const val API_CALL_INTERVAL = 10000L
 
 class WarsawRepository(private val warsawService: WarsawService) : BaseRepository() {
 
-    val TAG = "WarsawRepository"
+    private val TAG = "WarsawRepository"
+    private val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
-    var tramResults: List<VehicleInfo> = emptyList()
+    private var tramResults: List<VehicleInfo> = emptyList()
         set(value) {
             field = value
             if (!busCallInProgress) {
@@ -24,11 +31,7 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
             }
         }
 
-    private fun sumVehicleResults() {
-        allVehicleResults.postValue(tramResults + busResults)
-    }
-
-    var busResults: List<VehicleInfo> = emptyList()
+    private var busResults: List<VehicleInfo> = emptyList()
         set(value) {
             field = value
             if (!tramCallInProgress) {
@@ -36,10 +39,29 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
             }
         }
 
-    var tramCallInProgress = false
-    var busCallInProgress = false
+    private fun sumVehicleResults() {
+        val currentTime = System.currentTimeMillis()
+        val data = tramResults.filter { currentTime < format.parse(it.time).time + 120 * 1000 } +
+                busResults.filter { currentTime < format.parse(it.time).time + 120 * 1000 }
+        data.forEach {
+            it.apply {
+                vehiclesMap[markerKey]?.updateLocation(lat, lon, time) ?: vehiclesMap.put(
+                    markerKey,
+                    Vehicle(lat, lon, time, line, brigade)
+                )
+            }
+        }
+        vehicleMapLiveData.postValue(vehiclesMap)
+        // TODO remove this variable
+        allVehicleResults.postValue(data)
+    }
+
+    private var tramCallInProgress = false
+    private var busCallInProgress = false
 
     var allVehicleResults = MutableLiveData<List<VehicleInfo>>()
+    private val vehiclesMap = HashMap<String, Vehicle>()
+    val vehicleMapLiveData = MutableLiveData<HashMap<String, Vehicle>>()
 
     private val parentJob = Job()
     private val busParentJob = Job()
@@ -104,5 +126,4 @@ class WarsawRepository(private val warsawService: WarsawService) : BaseRepositor
             errorMessage = "API call failure :("
         )
     }
-
 }

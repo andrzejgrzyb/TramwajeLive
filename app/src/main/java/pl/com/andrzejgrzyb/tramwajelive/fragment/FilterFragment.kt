@@ -29,6 +29,22 @@ class FilterFragment : Fragment() {
         val instance: FilterFragment by lazy { FilterFragment() }
     }
 
+    private val lineSearchObserver = Observer { filter: String ->
+        Log.i("FilterFragment", filter)
+
+        if (filter.isNotEmpty()) {
+            filter_checkboxes_container.children.forEach {
+                it.visibility = if ((it as CheckBox).text.contains(filter)) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+            }
+        } else {
+            filter_checkboxes_container.children.forEach { it.visibility = View.VISIBLE }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentFilterBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_filter, container, false)
@@ -36,27 +52,13 @@ class FilterFragment : Fragment() {
         binding.vm = filterViewModel
         val view = binding.root
 
-        filterViewModel.lineSearch.observe(this, Observer { filter ->
-            Log.i("FilterFragment", filter)
-            if (filter.isNotEmpty()) {
-                filter_checkboxes_container.children.forEach {
-                    if ((it as CheckBox).text.contains(filter)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
-                    }
-                }
-            } else {
-                filter_checkboxes_container.children.forEach {
-                    it.visibility = View.VISIBLE
-                }
-            }
-        })
+        filterViewModel.lineSearch.observe(this, lineSearchObserver)
         return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        filterViewModel.lineSearch.postValue("")
         vehicleDataViewModel.lineNumbers.forEach {
             val checkBox = CheckBox(ContextThemeWrapper(context, R.style.FilterCheckbox), null, R.style.FilterCheckbox)
             checkBox.text = it

@@ -7,13 +7,8 @@
             android:title="Map"/>
 
     <item
-            android:id="@+id/navigation_dashboard"
+            android:id="@+id/navigation_lines"
             android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="List"/>
-
-    <item
-            android:id="@+id/navigation_notifications"
-            android:icon="@drawable/ic_notifications_black_24dp"
-            android:title="Refresh"/>
+            android:title="Lines"/>
 
 </menu>

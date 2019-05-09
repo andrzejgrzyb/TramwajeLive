@@ -1,6 +1,5 @@
 package pl.com.andrzejgrzyb.tramwajelive
 
-import pl.com.andrzejgrzyb.tramwajelive.fragment.MapViewModel
 import pl.com.andrzejgrzyb.tramwajelive.fragment.VehicleDataViewModel
 import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawRepository
 import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawService
@@ -27,8 +26,7 @@ val localRepository = module {
 
 val viewModelModule = module {
     viewModel { MainViewModel(get(), get()) }
-    viewModel { VehicleDataViewModel(get(), get()) }
-    viewModel { MapViewModel(get()) }
+    viewModel { VehicleDataViewModel(get()) }
     viewModel { FilterViewModel(get()) }
 }
 

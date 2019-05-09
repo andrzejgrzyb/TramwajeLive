@@ -10,7 +10,11 @@ data class VehicleInfo(
     @SerializedName("Time")
     val time: String,
     @SerializedName("Lines")
-    val lines: String,
+    val line: String,
     @SerializedName("Brigade")
-    val brigade: String
-)
+    val brigade: String,
+    var direction: Float?
+) {
+    val markerKey: String
+        get() = "${line}_$brigade"
+}

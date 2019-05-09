@@ -8,7 +8,7 @@ import pl.com.andrzejgrzyb.tramwajelive.R
 import pl.com.andrzejgrzyb.tramwajelive.model.VehicleInfo
 import kotlinx.android.synthetic.main.recycler_view_item_vehicle_info.view.*
 
-class VehicleAdapter() : RecyclerView.Adapter<VehicleAdapter.ViewHolder>() {
+class VehicleAdapter : RecyclerView.Adapter<VehicleAdapter.ViewHolder>() {
 
     internal var data: List<VehicleInfo> = ArrayList()
         set(data) {
@@ -30,12 +30,10 @@ class VehicleAdapter() : RecyclerView.Adapter<VehicleAdapter.ViewHolder>() {
         holder.bindData(data[position])
     }
 
-
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         fun bindData(vehicleInfo: VehicleInfo) {
-            itemView.line_number.text = vehicleInfo.lines.toString()
-            itemView.brigade.text = vehicleInfo.brigade.toString()
+            itemView.line_number.text = vehicleInfo.line
+            itemView.brigade.text = vehicleInfo.brigade
             itemView.latitude.text = vehicleInfo.lat.toString()
             itemView.longitude.text = vehicleInfo.lon.toString()
             itemView.time.text = vehicleInfo.time
