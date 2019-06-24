@@ -3,14 +3,13 @@ package pl.com.andrzejgrzyb.tramwajelive
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import pl.com.andrzejgrzyb.tramwajelive.repository.FilterRepository
-import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawRepository
 
 private const val TAG = "MainViewModel"
 
-class MainViewModel(private val warsawRepository: WarsawRepository, val filterRepository: FilterRepository) :
+class MainViewModel(private val filterRepository: FilterRepository) :
     BaseViewModel() {
 
-    val filteredLineNumbers = MutableLiveData<HashSet<String>>()
+    val filteredLineNumbers = MutableLiveData<Set<String>>()
 
     val currentFragment = MutableLiveData<Int>().apply { postValue(R.id.navigation_home) }
 
@@ -19,16 +18,8 @@ class MainViewModel(private val warsawRepository: WarsawRepository, val filterRe
         return@OnNavigationItemSelectedListener true
     }
 
-    fun startRefreshingData() {
-        warsawRepository.startRefreshingData()
-    }
-
-    fun stopRefreshingData() {
-        warsawRepository.stopRefreshingData()
-    }
-
     fun refreshData() {
-        warsawRepository.startRefreshingData()
+        // TODO manual refresh
         toastMessage.value = "Manual refresh"
     }
 

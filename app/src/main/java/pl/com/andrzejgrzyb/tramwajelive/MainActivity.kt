@@ -47,16 +47,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        mainViewModel.startRefreshingData()
-    }
-
-    override fun onPause() {
-        mainViewModel.stopRefreshingData()
-        super.onPause()
-    }
-
     private fun openFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)

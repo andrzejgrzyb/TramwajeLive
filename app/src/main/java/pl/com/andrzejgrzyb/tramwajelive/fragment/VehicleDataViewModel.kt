@@ -1,34 +1,54 @@
 package pl.com.andrzejgrzyb.tramwajelive.fragment
 
+import android.os.Handler
+import android.util.Log
+import androidx.lifecycle.LiveData
 import com.google.android.gms.maps.model.CameraPosition
 import pl.com.andrzejgrzyb.tramwajelive.BaseViewModel
+import pl.com.andrzejgrzyb.tramwajelive.model.Vehicle
 import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawRepository
+import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase
 
-class VehicleDataViewModel(warsawRepository: WarsawRepository) : BaseViewModel() {
+const val API_CALL_INTERVAL = 10000L
+
+class VehicleDataViewModel(
+    warsawRepository: WarsawRepository, private val getVehicleDataUseCase: GetVehicleDataUseCase
+) : BaseViewModel() {
+
+    companion object {
+        private const val TAG = "VehicleDataViewModel"
+    }
+
+    private val handler = Handler()
+    val vehicleMap: LiveData<MutableMap<String, Vehicle>>
 
     init {
         toastMessage = warsawRepository.errorMessage
+        vehicleMap = getVehicleDataUseCase.vehiclePositions
     }
 
     var cameraPosition: CameraPosition? = null
-    // TODO remove vehicleData list
-    val vehicleData = warsawRepository.allVehicleResults
-    val vehicleMap = warsawRepository.vehicleMapLiveData
-
     val lineNumbers: List<String>
         get() {
-            val lines = HashSet<String>()
-            vehicleData.value?.forEach { lines.add(it.line) }
-            return lines.toList().sortedWith(Comparator<String> { a, b ->
-                val aAsInt = a.toIntOrNull()
-                val bAsInt = b.toIntOrNull()
-                if (aAsInt == null) {
-                    if (bAsInt == null) a.compareTo(b)
-                    else 1
-                } else {
-                    if (bAsInt == null) -1
-                    else aAsInt.compareTo(bAsInt)
-                }
-            })
+            return getVehicleDataUseCase.lineNumbers
         }
+
+    private val runnableCode = object : Runnable {
+        override fun run() {
+            Log.i(TAG, "in runnable")
+            // Do something here on the main thread
+            getVehicleDataUseCase.refreshVehiclePositions()
+            handler.postDelayed(this, API_CALL_INTERVAL)
+        }
+    }
+
+    fun startRefreshingVehiclePositions() {
+        handler.removeCallbacks(runnableCode)
+        handler.post(runnableCode)
+    }
+
+    fun stopRefreshingVehiclePositions() {
+        Log.i(TAG, "Stopped refreshing data")
+        handler.removeCallbacks(runnableCode)
+    }
 }

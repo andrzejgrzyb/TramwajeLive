@@ -1,7 +1,7 @@
 package pl.com.andrzejgrzyb.tramwajelive.repository
 
-import pl.com.andrzejgrzyb.tramwajelive.model.ApiResponse
 import kotlinx.coroutines.Deferred
+import pl.com.andrzejgrzyb.tramwajelive.model.ApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

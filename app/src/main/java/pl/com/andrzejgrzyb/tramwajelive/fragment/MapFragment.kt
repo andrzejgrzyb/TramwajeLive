@@ -42,11 +42,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val mapViewModel by sharedViewModel<VehicleDataViewModel>()
     private val mainViewModel by sharedViewModel<MainViewModel>()
 
-    private val vehicleMapObserver = Observer<HashMap<String, Vehicle>> { data ->
+    private val vehicleMapObserver = Observer<Map<String, Vehicle>> { data ->
         Log.i(TAG, "map changed")
         updateMapMarkers(data)
     }
-    private val filteredLineNumbersObserver = Observer<HashSet<String>> {
+    private val filteredLineNumbersObserver = Observer<Set<String>> {
         Log.i(TAG, "Filters changed: $it")
         updateMapMarkers(mapViewModel.vehicleMap.value)
     }
@@ -110,6 +110,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mainViewModel.filteredLineNumbers.observe(this, filteredLineNumbersObserver)
     }
 
+    override fun onResume() {
+        super.onResume()
+        mapViewModel.startRefreshingVehiclePositions()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapViewModel.stopRefreshingVehiclePositions()
+    }
+
     private fun checkLocationPermissions() {
         // Here, thisActivity is the current activity
         activity?.let {
@@ -168,7 +178,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun updateMapMarkers(data: HashMap<String, Vehicle>?) {
+    private fun updateMapMarkers(data: Map<String, Vehicle>?) {
         if (data.isNullOrEmpty()) {
             return
         }

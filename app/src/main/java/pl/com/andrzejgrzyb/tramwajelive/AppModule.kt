@@ -11,6 +11,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import pl.com.andrzejgrzyb.tramwajelive.fragment.FilterViewModel
 import pl.com.andrzejgrzyb.tramwajelive.repository.FilterRepository
+import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -22,11 +23,12 @@ val networkModule = module {
 
 val localRepository = module {
     single { FilterRepository() }
+    single { GetVehicleDataUseCase(get()) }
 }
 
 val viewModelModule = module {
-    viewModel { MainViewModel(get(), get()) }
-    viewModel { VehicleDataViewModel(get()) }
+    viewModel { MainViewModel(get()) }
+    viewModel { VehicleDataViewModel(get(), get()) }
     viewModel { FilterViewModel(get()) }
 }
 
