@@ -11,22 +11,17 @@ import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase
 
 const val API_CALL_INTERVAL = 10000L
 
-class VehicleDataViewModel(
-    warsawRepository: WarsawRepository, private val getVehicleDataUseCase: GetVehicleDataUseCase
+class MapViewModel(
+    warsawRepository: WarsawRepository,
+    private val getVehicleDataUseCase: GetVehicleDataUseCase
 ) : BaseViewModel() {
 
     companion object {
-        private const val TAG = "VehicleDataViewModel"
+        private const val TAG = "MapViewModel"
     }
 
     private val handler = Handler()
     val vehicleMap: LiveData<MutableMap<String, Vehicle>>
-
-    init {
-        toastMessage = warsawRepository.errorMessage
-        vehicleMap = getVehicleDataUseCase.vehiclePositions
-    }
-
     var cameraPosition: CameraPosition? = null
     val lineNumbers: List<String>
         get() {
@@ -40,6 +35,11 @@ class VehicleDataViewModel(
             getVehicleDataUseCase.refreshVehiclePositions()
             handler.postDelayed(this, API_CALL_INTERVAL)
         }
+    }
+
+    init {
+        toastMessage = warsawRepository.errorMessage
+        vehicleMap = getVehicleDataUseCase.vehiclePositions
     }
 
     fun startRefreshingVehiclePositions() {

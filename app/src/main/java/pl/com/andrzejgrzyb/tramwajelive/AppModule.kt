@@ -1,16 +1,18 @@
 package pl.com.andrzejgrzyb.tramwajelive
 
-import pl.com.andrzejgrzyb.tramwajelive.fragment.VehicleDataViewModel
-import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawRepository
-import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawService
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import pl.com.andrzejgrzyb.tramwajelive.fragment.FilterViewModel
+import pl.com.andrzejgrzyb.tramwajelive.fragment.MapViewModel
 import pl.com.andrzejgrzyb.tramwajelive.repository.FilterRepository
+import pl.com.andrzejgrzyb.tramwajelive.repository.ObjectBox
+import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawRepository
+import pl.com.andrzejgrzyb.tramwajelive.repository.WarsawService
 import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,13 +24,14 @@ val networkModule = module {
 }
 
 val localRepository = module {
+    single(createdAtStart = true) { ObjectBox.init(androidContext()) }
     single { FilterRepository() }
     single { GetVehicleDataUseCase(get()) }
 }
 
 val viewModelModule = module {
     viewModel { MainViewModel(get()) }
-    viewModel { VehicleDataViewModel(get(), get()) }
+    viewModel { MapViewModel(get(), get()) }
     viewModel { FilterViewModel(get()) }
 }
 
@@ -49,7 +52,7 @@ fun provideWarsawService(): WarsawService {
     }
 
     val client = OkHttpClient.Builder()
-//        .addInterceptor(loggingInterceptor)
+        .addInterceptor(loggingInterceptor)
         .addInterceptor(apiParamsInterceptor)
         .build()
 

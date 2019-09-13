@@ -56,19 +56,21 @@ class GetVehicleDataUseCase(private val warsawRepository: WarsawRepository) {
                 )
             }
         }
-        lineNumbers = updatedLineNumbers.sortedWith(comparator)
+        lineNumbers = updatedLineNumbers.sortedWith(lineNumberComparator)
         return vehiclesMap
     }
 
-    private val comparator = Comparator<String> { a, b ->
-        val aAsInt = a.toIntOrNull()
-        val bAsInt = b.toIntOrNull()
-        if (aAsInt == null) {
-            if (bAsInt == null) a.compareTo(b)
-            else 1
-        } else {
-            if (bAsInt == null) -1
-            else aAsInt.compareTo(bAsInt)
+    companion object {
+        val lineNumberComparator = Comparator<String> { a, b ->
+            val aAsInt = a.toIntOrNull()
+            val bAsInt = b.toIntOrNull()
+            if (aAsInt == null) {
+                if (bAsInt == null) a.compareTo(b)
+                else 1
+            } else {
+                if (bAsInt == null) -1
+                else aAsInt.compareTo(bAsInt)
+            }
         }
     }
 }

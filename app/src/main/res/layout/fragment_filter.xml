@@ -14,9 +14,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="Lines"/>
+            <TextView
+                android:id="@+id/filter_sets_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter sets" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filter_sets_chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButtonIndex="@={vm.checkedChip}"
+                app:singleSelection="true">
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:checkable="false"
+                    android:shadowColor="@color/bgLineFilterChip"
+                    android:onClick="@{() -> vm.onAddLineFilterButtonClicked()}"/>
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lines" />
+
             <EditText
                     android:id="@+id/line_number_edit_text"
                     android:layout_width="200dp"

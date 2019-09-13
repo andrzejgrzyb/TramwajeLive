@@ -39,7 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private val markersMap = HashMap<String, Marker>()
 
-    private val mapViewModel by sharedViewModel<VehicleDataViewModel>()
+    private val mapViewModel by sharedViewModel<MapViewModel>()
     private val mainViewModel by sharedViewModel<MainViewModel>()
 
     private val vehicleMapObserver = Observer<Map<String, Vehicle>> { data ->
@@ -254,18 +254,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             returnedBitmap
         }
     }
+    val handler = Handler()
+    val markerMoveDuration: Long = 500
 
     private fun animateMarker(marker: Marker, toPosition: LatLng) {
-        val handler = Handler()
         val startTime = SystemClock.uptimeMillis()
         val startLatLng = marker.position
-        val duration: Long = 500
         val interpolator = LinearInterpolator()
 
         handler.post(object : Runnable {
             override fun run() {
                 val elapsed = SystemClock.uptimeMillis() - startTime
-                val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
+                val t = interpolator.getInterpolation(elapsed.toFloat() / markerMoveDuration)
                 val lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude
                 val lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude
                 marker.position = LatLng(lat, lng)
