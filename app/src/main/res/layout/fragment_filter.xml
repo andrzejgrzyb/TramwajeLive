@@ -26,13 +26,17 @@
                 android:layout_height="wrap_content"
                 android:checkedButtonIndex="@={vm.checkedChip}"
                 app:singleSelection="true">
+
                 <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+"
-                    android:checkable="false"
-                    android:shadowColor="@color/bgLineFilterChip"
-                    android:onClick="@{() -> vm.onAddLineFilterButtonClicked()}"/>
+                        style="@style/Base.Widget.MaterialComponents.Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="false"
+                        android:onClick="@{() -> vm.onAddLineFilterButtonClicked()}"
+                        android:shadowColor="@color/bgLineFilterChip"
+                        app:closeIconEnabled="false"
+                        android:textAlignment="center"
+                        android:text="+" />
             </com.google.android.material.chip.ChipGroup>
 
             <TextView

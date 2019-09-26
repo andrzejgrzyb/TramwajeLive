@@ -10,6 +10,7 @@ class MainViewModel(private val filterRepository: FilterRepository) :
     BaseViewModel() {
 
     val filteredLineNumbers = MutableLiveData<Set<String>>()
+    val filtersEnabled = MutableLiveData<Boolean>()
 
     val currentFragment = MutableLiveData<Int>().apply { postValue(R.id.navigation_home) }
 
@@ -23,11 +24,11 @@ class MainViewModel(private val filterRepository: FilterRepository) :
         toastMessage.value = "Manual refresh"
     }
 
-    fun isFilterOn(): Boolean = !filteredLineNumbers.value.isNullOrEmpty()
-
     fun filterButtonClicked() {
-        if (isFilterOn()) {
-            filteredLineNumbers.postValue(null)
+        if (filtersEnabled.value == true) {
+            filtersEnabled.value = false
+        } else if (!filteredLineNumbers.value.isNullOrEmpty()){
+            filtersEnabled.value = true
         } else {
             currentFragment.postValue(R.id.navigation_lines)
         }

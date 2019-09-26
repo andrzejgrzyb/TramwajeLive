@@ -56,11 +56,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar, menu)
-        mainViewModel.filteredLineNumbers.observe(this, Observer {
+        mainViewModel.filtersEnabled.observe(this, Observer { isEnabled ->
             menu?.findItem(R.id.filter)?.icon?.mutate()?.setColorFilter(
                 ContextCompat.getColor(
                     this,
-                    if (mainViewModel.isFilterOn()) R.color.colorAccent else R.color.bgLineNumberFilter
+                    if (isEnabled) R.color.colorAccent else R.color.bgLineNumberFilter
                 ), PorterDuff.Mode.SRC_ATOP
             )
         })

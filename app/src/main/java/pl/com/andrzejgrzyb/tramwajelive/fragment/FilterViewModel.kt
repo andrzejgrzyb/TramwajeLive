@@ -28,11 +28,21 @@ class FilterViewModel(private val filterRepository: FilterRepository) : BaseView
     }
 
     val lineFilters = filterRepository.loadLineFilters()
+    var addedLineFilter = false
+    get() {
+        return if (field) {
+            field = false
+            true
+        } else {
+            false
+        }
+    }
     val checkedLines = MutableLiveData<HashSet<String>>()
 
     fun onAddLineFilterButtonClicked() {
         Log.i("FilterViewModel", "onAddLineFilterButtonClicked()")
         filterRepository.addNewLinesFilter()
+        addedLineFilter = true
     }
 
     fun removeLineFilter(index: Int) {

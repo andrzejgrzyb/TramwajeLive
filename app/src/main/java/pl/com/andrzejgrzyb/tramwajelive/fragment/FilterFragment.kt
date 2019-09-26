@@ -3,7 +3,10 @@ package pl.com.andrzejgrzyb.tramwajelive.fragment
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import androidx.annotation.ColorInt
@@ -21,6 +24,7 @@ import pl.com.andrzejgrzyb.tramwajelive.adapter.setCheckChipIndex
 import pl.com.andrzejgrzyb.tramwajelive.databinding.FragmentFilterBinding
 import pl.com.andrzejgrzyb.tramwajelive.model.LinesFilter
 import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase.Companion.lineNumberComparator
+import kotlin.math.min
 
 class FilterFragment : Fragment() {
 
@@ -56,36 +60,54 @@ class FilterFragment : Fragment() {
             filters.forEach {
                 addLineFilterChip(it)
             }
-            filterViewModel.checkedChip.value?.let {
-                filter_sets_chip_group.setCheckChipIndex(it)
+            if (filterViewModel.addedLineFilter) {
+                filter_sets_chip_group.setCheckChipIndex(filters.size - 1)
+            } else {
+                filterViewModel.checkedChip.value?.let {
+                    filter_sets_chip_group.setCheckChipIndex(it)
+                }
             }
         }
     }
 
     private fun addLineFilterChip(it: LinesFilter) {
-        addLineFilterChip(it.lines.sortedWith(lineNumberComparator).joinToString(separator = ","), getChipColor(it.color))
+        var text = it.lines.sortedWith(lineNumberComparator).subList(0, min(5, it.lines.size))
+            .joinToString(separator = ",")
+        if (it.lines.size > 5)
+            text += "..."
+
+        addLineFilterChip(text, getChipColor(it.color))
     }
 
     private fun addLineFilterChip(text: String, @ColorInt color: Int, checkable : Boolean = true) {
-        val chip = Chip(filter_sets_chip_group.context, null, R.style.Widget_MaterialComponents_ChipGroup)
-        chip.text = if (text.isEmpty()) "(empty)" else text
-        chip.isCheckable = checkable
-        chip.chipBackgroundColor = ColorStateList.valueOf(color)
-        chip.setOnLongClickListener {
-            filterViewModel.checkedChip.value?.let {checkChipIndex ->
-
-                val currentChipIndex = filter_sets_chip_group.indexOfChild(it)
-                if (checkChipIndex > currentChipIndex) {
-                    filterViewModel.checkedChip.value = checkChipIndex - 1
-                } else if (checkChipIndex == currentChipIndex) {
-                    filterViewModel.checkedChip.value = -1
-                }
-            }
-
-            filterViewModel.removeLineFilter(filter_sets_chip_group.indexOfChild(it))
-            return@setOnLongClickListener true
+        val chip = Chip(filter_sets_chip_group.context)
+            //R.style.Widget_MaterialComponents_ChipGroup)
+        chip.apply {
+            this.text = if (text.isEmpty()) "(empty)" else text
+            isCheckable = checkable
+            chipBackgroundColor = ColorStateList.valueOf(color)
+            isCloseIconVisible = chip.isChecked
+            isClickable = true
+            setPadding(24, 16,24, 16)
+            setOnCheckedChangeListener(onChipCheckedChangeListener)
+            setOnCloseIconClickListener(onCloseClickListener)
         }
         filter_sets_chip_group.addView(chip, filter_sets_chip_group.childCount - 1)
+    }
+
+    private val onChipCheckedChangeListener =
+        CompoundButton.OnCheckedChangeListener { chip, isChecked ->
+            chip as Chip
+            chip.isCloseIconVisible = isChecked
+
+        }
+
+    private val onCloseClickListener = View.OnClickListener {
+        Log.i("OnCloseIconClickListene", "close icon clicked in chip " + (it as Chip).text)
+        filterViewModel.checkedChip.value = -1
+        mainViewModel.filteredLineNumbers.value = null
+        mainViewModel.filtersEnabled.value = false
+        filterViewModel.removeLineFilter(filter_sets_chip_group.indexOfChild(it))
     }
 
     private fun getChipColor(colorNumber: Int) : Int {
@@ -104,11 +126,12 @@ class FilterFragment : Fragment() {
             val linesFilter = filterViewModel.lineFilters.value?.get(checkedChip)
             Log.i("currentLineFilterObserv", linesFilter.toString())
             enableCheckboxes(true)
+            mainViewModel.filtersEnabled.value = true
             mainViewModel.filteredLineNumbers.value =
                 filterViewModel.lineFilters.value?.get(checkedChip)?.lines
         } else {
             enableCheckboxes(false)
-            mainViewModel.filteredLineNumbers.value = null
+            mainViewModel.filtersEnabled.value = false
         }
         updateCheckboxes()
     }
