@@ -3,10 +3,14 @@ package pl.com.andrzejgrzyb.tramwajelive
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import pl.com.andrzejgrzyb.tramwajelive.repository.FilterRepository
+import pl.com.andrzejgrzyb.tramwajelive.usecase.GetVehicleDataUseCase
 
 private const val TAG = "MainViewModel"
 
-class MainViewModel(private val filterRepository: FilterRepository) :
+class MainViewModel(
+    private val filterRepository: FilterRepository,
+    private val getVehicleDataUseCase: GetVehicleDataUseCase
+) :
     BaseViewModel() {
 
     val filteredLineNumbers = MutableLiveData<Set<String>>()
@@ -20,7 +24,7 @@ class MainViewModel(private val filterRepository: FilterRepository) :
     }
 
     fun refreshData() {
-        // TODO manual refresh
+        getVehicleDataUseCase.refreshVehiclePositions()
         toastMessage.value = "Manual refresh"
     }
 

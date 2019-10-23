@@ -30,7 +30,7 @@ val localRepository = module {
 }
 
 val viewModelModule = module {
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get(), get()) }
     viewModel { FilterViewModel(get()) }
 }
